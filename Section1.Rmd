@@ -1,0 +1,21 @@
+---
+title: "- Data Understanding and Data Exploration"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+phones <- read.csv("./eurocomPHONEchurners.csv")
+head(phones)
+```
+```{r}
+count_na <- sapply(phones, function(y) sum(length(which(is.na(y)))))
+data.frame(count_na)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
