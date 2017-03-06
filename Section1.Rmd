@@ -2,20 +2,73 @@
 title: "- Data Understanding and Data Exploration"
 output: html_notebook
 ---
+# EuroCom
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+## Reading the dataset
 
 ```{r}
 phones <- read.csv("./eurocomPHONEchurners.csv")
 head(phones)
 ```
+
+## Data pre-processing
+
+Getting how many null values there is per column.
+
 ```{r}
-count_na <- sapply(phones, function(y) sum(length(which(is.na(y)))))
-data.frame(count_na)
+count_na <- sapply(phones, function(y) sum(length(which(is.na(y) | y == ""))))
+na_df <- data.frame(count_na)
+
+subset(na_df, na_df$count_na > 0)
+```
+### Replacing na numerics with medians
+```{r}
+replace_na_with_median <- function(col) {
+  median_without_na <- median(col, na.rm=TRUE)
+  col[is.na(col)] <- median_without_na
+  return(col)
+}
+```
+### MINUTES_3MONTHS_AGO
+```{r}
+phones$MINUTES_3MONTHS_AGO <- replace_na_with_median(phones$MINUTES_3MONTHS_AGO)
+```
+### CUST_MOS
+```{r}
+phones$CUST_MOS <- replace_na_with_median(phones$CUST_MOS)
+```
+### TOT_MINUTES_USAGE
+```{r}
+phones$TOT_MINUTES_USAGE <- replace_na_with_median(phones$TOT_MINUTES_USAGE)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+### Getting the mode for categorical columns
+```{r}
+get_mode <- function(x){
+  xtable <- table(x)
+  idx <- xtable == max(xtable)
+  names(xtable)[idx]
+}
+```
+### PHONE_PLAN
+```{r}
+phones$PHONE_PLAN[phones$PHONE_PLAN == ""] <- get_mode(phones$PHONE_PLAN)
+```
+### EDUCATION
+```{r}
+phones$EDUCATION[phones$EDUCATION == ""] <- get_mode(phones$EDUCATION)
+```
+
+
+### Discretising Income predictor values
+```{r}
+head(phones$INCOME)
+```
+
+```{r}
+phones$INCOME <- cut(phones$INCOME, breaks = c(0, 38000, 88000, max(phones$INCOME)), include.lowest = TRUE, labels = c("Low Income", "Medium Income","High Income"))
+
+head(phones$INCOME)
+```
+
