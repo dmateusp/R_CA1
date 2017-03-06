@@ -31,3 +31,7 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+# WORD
+~$R_CA1.docx
+~WRL0005.tmp

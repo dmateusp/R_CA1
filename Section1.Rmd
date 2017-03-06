@@ -4,6 +4,12 @@ output: html_notebook
 ---
 # EuroCom
 
+### Dependencies
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+```
+
 ## Reading the dataset
 
 ```{r}
@@ -72,3 +78,60 @@ phones$INCOME <- cut(phones$INCOME, breaks = c(0, 38000, 88000, max(phones$INCOM
 head(phones$INCOME)
 ```
 
+### Studying the distribution of the numeric attributes
+
+### CUST_MOS
+```{r}
+ggplot(data=phones ,aes(phones$CUST_MOS)) + geom_histogram(binwidth=5) + scale_x_continuous(breaks = seq(0,60,5))
+```
+### NUM_LINES
+```{r}
+ggplot(data=phones ,aes(phones$NUM_LINES)) + geom_histogram(binwidth=1) + scale_x_continuous(breaks = 0:3)
+```
+### TOT_MINUTES_USAGE
+```{r}
+ggplot(data=phones ,aes(phones$TOT_MINUTES_USAGE)) + geom_histogram(bins = 30) +  scale_x_continuous(breaks = seq(0, 30000, 3000))
+```
+### INCOME
+```{r}
+ggplot(data=phones ,aes(phones$INCOME)) + geom_histogram(stat="count")
+```
+### PHONE_PLAN
+```{r}
+ggplot(data=phones ,aes(phones$PHONE_PLAN)) + geom_histogram(stat="count")
+```
+### EDUCATION
+```{r}
+ggplot(data=phones ,aes(phones$EDUCATION)) + geom_histogram(stat="count")
+```
+### Seeing the influence on churn
+### INCOME
+```{r}
+ggplot(data=phones ,aes(x=phones$INCOME, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count") + theme_bw()
+```
+### PHONE_PLAN
+```{r}
+ggplot(data=phones ,aes(x=phones$PHONE_PLAN, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count") + theme_bw()
+```
+
+### TOT_MINUTES_USAGE
+```{r}
+ggplot(data=phones ,aes(x=phones$TOT_MINUTES_USAGE, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(bins = 5) +  scale_x_continuous(breaks = seq(0, 30000, 5000))
+```
+
+### CUST_MOS
+```{r}
+ggplot(data=phones ,aes(x=phones$CUST_MOS, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(binwidth=5) + scale_x_continuous(breaks = seq(0,50,5))
+```
+### NUM_LINES
+```{r}
+ggplot(data=phones ,aes(x=phones$NUM_LINES, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(binwidth=1, position="dodge") + scale_x_continuous(breaks = 0:3)
+```
+### EDUCATION
+```{r}
+ggplot(data=phones ,aes(x=phones$EDUCATION, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count")
+```
+### GENDER
+```{r}
+ggplot(data=phones ,aes(x=phones$GENDER, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count", position="dodge")
+```
