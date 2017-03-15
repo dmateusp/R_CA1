@@ -82,7 +82,7 @@ head(phones$INCOME)
 
 ### CUST_MOS
 ```{r}
-ggplot(data=phones ,aes(phones$CUST_MOS)) + geom_histogram(binwidth=5) + scale_x_continuous(breaks = seq(0,60,5))
+ggplot(data=phones ,aes(phones$CUST_MOS)) + geom_histogram(binwidth=6) + scale_x_continuous(breaks = seq(0,60,5)) + scale_y_continuous(breaks = seq(0,1000,50))
 ```
 ### NUM_LINES
 ```{r}
@@ -92,6 +92,9 @@ ggplot(data=phones ,aes(phones$NUM_LINES)) + geom_histogram(binwidth=1) + scale_
 ```{r}
 ggplot(data=phones ,aes(phones$TOT_MINUTES_USAGE)) + geom_histogram(bins = 30) +  scale_x_continuous(breaks = seq(0, 30000, 3000))
 ```
+
+### Distribution of nominal attributes
+
 ### INCOME
 ```{r}
 ggplot(data=phones ,aes(phones$INCOME)) + geom_histogram(stat="count")
@@ -134,4 +137,26 @@ ggplot(data=phones ,aes(x=phones$EDUCATION, group=phones$CHURNER, fill=phones$CH
 ### GENDER
 ```{r}
 ggplot(data=phones ,aes(x=phones$GENDER, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count", position="dodge")
+```
+
+### Skewness of numerical attributes
+### CUST_MOS
+```{r}
+cust_mos_skew <-(3*(mean(phones$CUST_MOS)-median(phones$CUST_MOS)))/sd(phones$CUST_MOS)
+cust_mos_skew
+```
+### NUM_LINES
+```{r}
+num_lines_skew <-(3*(mean(phones$NUM_LINES)-median(phones$NUM_LINES)))/sd(phones$NUM_LINES)
+num_lines_skew
+```
+### TOT_MINUTES_USAGE
+```{r}
+tot_minutes_usage_skew <-(3*(mean(phones$TOT_MINUTES_USAGE)-median(phones$TOT_MINUTES_USAGE)))/sd(phones$TOT_MINUTES_USAGE)
+tot_minutes_usage_skew
+```
+
+### OUTLIERS
+```{r}
+ggplot(data=phones ,aes(x=phones$TOT_MINUTES_USAGE, y=phones$MINUTES_CURR_MONTH)) + geom_point()
 ```
