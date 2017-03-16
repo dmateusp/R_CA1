@@ -17,9 +17,11 @@ phones <- read.csv("./eurocomPHONEchurners.csv")
 head(phones)
 ```
 
+# 1 
 ## Data pre-processing
 
-Getting how many null values there is per column.
+### 1.a
+Getting how many null values, or empty string values there is per column.
 
 ```{r}
 count_na <- sapply(phones, function(y) sum(length(which(is.na(y) | y == ""))))
@@ -27,7 +29,8 @@ na_df <- data.frame(count_na)
 
 subset(na_df, na_df$count_na > 0)
 ```
-### Replacing na numerics with medians
+### 1.b 
+Replacing na numerics with medians
 ```{r}
 replace_na_with_median <- function(col) {
   median_without_na <- median(col, na.rm=TRUE)
@@ -49,7 +52,8 @@ phones$TOT_MINUTES_USAGE <- replace_na_with_median(phones$TOT_MINUTES_USAGE)
 ```
 
 
-### Getting the mode for categorical columns
+### 1.c
+Getting the mode for categorical columns PER GENDER
 ```{r}
 get_mode <- function(x){
   xtable <- table(x)
@@ -57,16 +61,74 @@ get_mode <- function(x){
   names(xtable)[idx]
 }
 ```
+Function to get all modes from a data frame
+```{r}
+get_modes <- function(x){
+  if(class(x) =="numeric" | class(x)=="integer") return("X")
+  xtable <- table(x)
+  idx <- xtable == max(xtable)
+  names(xtable)[idx]
+}
+```
+Displaying modes for males
+```{r}
+phones_male <- phones[phones$GENDER == 'M',]
+
+modes_male <- data.frame(sapply(phones_male, get_modes))
+names(modes_male)[1] <- "MODE_MALE"
+modes_male <- subset(modes_male, MODE_MALE!='X')
+
+modes_male
+```
+Displaying modes for females
+```{r}
+phones_female <- phones[phones$GENDER == 'F',]
+
+modes_female <- data.frame(sapply(phones_female, get_modes))
+names(modes_female)[1] <- "MODE_FEMALE"
+modes_female <- subset(modes_female, MODE_FEMALE!='X')
+
+modes_female
+```
+
+
 ### PHONE_PLAN
 ```{r}
-phones$PHONE_PLAN[phones$PHONE_PLAN == ""] <- get_mode(phones$PHONE_PLAN)
+phones$PHONE_PLAN[phones$PHONE_PLAN == "" & phones$GENDER=='M'] <- get_mode(phones$PHONE_PLAN[phones$GENDER=='M'])
+phones$PHONE_PLAN[phones$PHONE_PLAN == "" & phones$GENDER=='F'] <- get_mode(phones$PHONE_PLAN[phones$GENDER=='F'])
 ```
 ### EDUCATION
 ```{r}
-phones$EDUCATION[phones$EDUCATION == ""] <- get_mode(phones$EDUCATION)
+phones$EDUCATION[phones$EDUCATION == "" & phones$GENDER=='M'] <- get_mode(phones$EDUCATION[phones$GENDER=='M'])
+phones$EDUCATION[phones$EDUCATION == "" & phones$GENDER=='F'] <- get_mode(phones$EDUCATION[phones$GENDER=='F'])
+```
+### AREA_CODE
+```{r}
+phones$AREA_CODE[phones$AREA_CODE == "" & phones$GENDER=='M'] <- get_mode(phones$AREA_CODE[phones$GENDER=='M'])
+phones$AREA_CODE[phones$AREA_CODE == "" & phones$GENDER=='F'] <- get_mode(phones$AREA_CODE[phones$GENDER=='F'])
+```
+### LONGDIST_FLAG
+```{r}
+phones$LONGDIST_FLAG[phones$LONGDIST_FLAG == "" & phones$GENDER=='M'] <- get_mode(phones$LONGDIST_FLAG[phones$GENDER=='M'])
+phones$LONGDIST_FLAG[phones$LONGDIST_FLAG == "" & phones$GENDER=='F'] <- get_mode(phones$LONGDIST_FLAG[phones$GENDER=='F'])
+```
+### CALLWAITING_FLAG
+```{r}
+phones$CALLWAITING_FLAG[phones$CALLWAITING_FLAG == "" & phones$GENDER=='M'] <- get_mode(phones$CALLWAITING_FLAG[phones$GENDER=='M'])
+phones$CALLWAITING_FLAG[phones$CALLWAITING_FLAG == "" & phones$GENDER=='F'] <- get_mode(phones$CALLWAITING_FLAG[phones$GENDER=='F'])
+```
+### VOICEMAIL_FLAG
+```{r}
+phones$VOICEMAIL_FLAG[phones$VOICEMAIL_FLAG == "" & phones$GENDER=='M'] <- get_mode(phones$VOICEMAIL_FLAG[phones$GENDER=='M'])
+phones$VOICEMAIL_FLAG[phones$VOICEMAIL_FLAG == "" & phones$GENDER=='F'] <- get_mode(phones$VOICEMAIL_FLAG[phones$GENDER=='F'])
+```
+### MOBILE_PLAN
+```{r}
+phones$MOBILE_PLAN[phones$MOBILE_PLAN == "" & phones$GENDER=='M'] <- get_mode(phones$MOBILE_PLAN[phones$GENDER=='M'])
+phones$MOBILE_PLAN[phones$MOBILE_PLAN == "" & phones$GENDER=='F'] <- get_mode(phones$MOBILE_PLAN[phones$GENDER=='F'])
 ```
 
-
+## 2
 ### Discretising Income predictor values
 ```{r}
 head(phones$INCOME)
@@ -78,7 +140,24 @@ phones$INCOME <- cut(phones$INCOME, breaks = c(0, 37999, 88000, max(phones$INCOM
 head(phones$INCOME)
 ```
 
-### Studying the distribution of the numeric attributes
+## 3.c
+```{r}
+get_mode(phones$AREA_CODE)
+summary(phones$CUST_MOS)
+get_mode(phones$LONGDIST_FLAG)
+get_mode(phones$CALLWAITING_FLAG)
+summary(phones$NUM_LINES)
+get_mode(phones$VOICEMAIL_FLAG)
+get_mode(phones$MOBILE_PLAN)
+get_mode(phones$CONVERGENT_BILLING)
+get_mode(phones$GENDER)
+get_mode(phones$INCOME)
+get_mode(phones$PHONE_PLAN)
+get_mode(phones$EDUCATION)
+summary(phones$TOT_MINUTES_USAGE)
+
+```
+## 3.d
 
 ### CUST_MOS
 ```{r}
@@ -93,8 +172,6 @@ ggplot(data=phones ,aes(phones$NUM_LINES)) + geom_histogram(binwidth=1) + scale_
 ggplot(data=phones ,aes(phones$TOT_MINUTES_USAGE)) + geom_histogram(bins = 30, aes(y = ..density..)) +  scale_x_continuous(breaks = seq(0, 30000, 3000)) + labs(x="Total minutes usage" ,y="Number of persons (density)") + geom_density()
 ```
 
-### Distribution of nominal attributes
-
 ### INCOME
 ```{r}
 ggplot(data=phones ,aes(phones$INCOME)) + geom_histogram(stat="count") + labs(x="Income" ,y="Number of persons")
@@ -107,7 +184,7 @@ ggplot(data=phones ,aes(phones$PHONE_PLAN)) + geom_histogram(stat="count") + lab
 ```{r}
 ggplot(data=phones ,aes(phones$EDUCATION)) + geom_histogram(stat="count")   + labs(x="Education" ,y="Number of persons")
 ```
-### Seeing the influence on churn
+## 3.e
 ### INCOME
 ```{r}
 ggplot(data=phones ,aes(x=phones$INCOME, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count") + theme_bw()   + labs(x="Income" ,y="Number of persons", title="Looking for disproportions in Churning rates", fill="Churner")
@@ -139,7 +216,7 @@ ggplot(data=phones ,aes(x=phones$EDUCATION, group=phones$CHURNER, fill=phones$CH
 ggplot(data=phones ,aes(x=phones$GENDER, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count", position="dodge")  + labs(x="Gender" ,y="Number of persons", title="Looking for disproportions in Churning rates", fill="Churner")
 ```
 
-### Skewness of numerical attributes
+## 3.f
 ### CUST_MOS
 ```{r}
 cust_mos_skew <-(3*(mean(phones$CUST_MOS)-median(phones$CUST_MOS)))/sd(phones$CUST_MOS)
@@ -156,13 +233,9 @@ tot_minutes_usage_skew <-(3*(mean(phones$TOT_MINUTES_USAGE)-median(phones$TOT_MI
 tot_minutes_usage_skew
 ```
 
-### CORRELATION
-### Minutes of usage
-```{r}
-ggplot(data=phones ,aes(x=phones$TOT_MINUTES_USAGE, y=phones$MINUTES_CURR_MONTH + phones$MINUTES_PREV_MONTH + phones$MINUTES_3MONTHS_AGO)) + geom_point() + labs(x="Total minutes usage" ,y="Addition of minutes current month, last month, 3 months ago", title="Correlation between minutes of usage")
-```
 
-### OUTLIERS
+
+## 3.g
 
 ### CUST_MOS
 ```{r}
@@ -172,6 +245,7 @@ ggplot(data=phones ,aes(phones$CHURNER, phones$CUST_MOS)) + geom_boxplot() + lab
 ```{r}
 ggplot(data=phones ,aes(phones$CHURNER, phones$TOT_MINUTES_USAGE)) + geom_boxplot() + labs(x="Churner" ,y="Total minutes of usage")
 ```
+## 4.
 Finding outliers mathematically in TOT_MINUTES_USAGE
 
 IQR method
@@ -189,12 +263,53 @@ Z standardisation method
 z_score_tot_minutes_usage <- scale(phones$TOT_MINUTES_USAGE, center = TRUE, scale = TRUE)
 # same as (phones$TOT_MINUTES_USAGE - mean(phones$TOT_MINUTES_USAGE))/sd(phones$TOT_MINUTES_USAGE)
 summary(z_score_tot_minutes_usage)
-IQR_Z <- -0.07354 - -0.39323
-lower_bound_z <- -0.39323 - (IQR*1.5)
-upper_bound_z <- -0.07354 + (IQR*1.5)
 
 z_range <- table(z_score_tot_minutes_usage > -3 & z_score_tot_minutes_usage < 3)
 z_range[names(z_range)==FALSE]
 
+
+```
+## 5
+```{r}
+tot_mins_before_transfo <- (3*(mean(phones$TOT_MINUTES_USAGE)-median(phones$TOT_MINUTES_USAGE)))/sd(phones$TOT_MINUTES_USAGE)
+tot_mins_before_transfo
+```
+## 5.a
+Z-score standardisation
+see above, we reduced the number of outliers from 176 to 69
+```{r}
+tot_mins_z_score <- (3*(mean(z_score_tot_minutes_usage)-median(z_score_tot_minutes_usage)))/sd(z_score_tot_minutes_usage)
+tot_mins_z_score
+```
+## 5.b
+Natural log
+```{r}
+natural_log_transfo <- log(phones$TOT_MINUTES_USAGE[phones$TOT_MINUTES_USAGE != 0])
+natural_log_transfo_skewness <- (3*(mean(natural_log_transfo)-median(natural_log_transfo)))/sd(natural_log_transfo)
+
+natural_log_transfo_skewness
+```
+## 5.c
+Square root
+```{r}
+square_root_transfo <- sqrt(phones$TOT_MINUTES_USAGE)
+square_root_transfo_skewness <- (3*(mean(square_root_transfo)-median(square_root_transfo)))/sd(square_root_transfo)
+
+square_root_transfo_skewness
+```
+### CORRELATION
+### Minutes of usage
+```{r}
+ggplot(data=phones ,aes(x=phones$TOT_MINUTES_USAGE, y=phones$MINUTES_CURR_MONTH + phones$MINUTES_PREV_MONTH + phones$MINUTES_3MONTHS_AGO)) + geom_point() + labs(x="Total minutes usage" ,y="Addition of minutes current month, last month, 3 months ago", title="Correlation between minutes of usage")
+```
+```{r}
+ggplot(data=phones ,aes(x=phones$TOT_MINUTES_USAGE, y=phones$CUST_MOS)) + geom_point() + labs(y="Customer fidelity (sequential months)" ,x="Total minutes usage", title="Correlation between minutes of usage and customer fidelity")
+```
+```{r}
+ggplot(data=phones ,aes(x=phones$NUM_LINES, y=phones$CUST_MOS)) + geom_point() + labs(y="Customer fidelity (sequential months)" ,x="number of lines", title="Correlation between number of lines and customer fidelity")
+```
+```{r}
+ggplot(data=phones ,aes(x=phones$NUM_LINES, y=phones$TOT_MINUTES_USAGE)) + geom_point() + labs(y="Total minutes usage" ,x="number of lines", title="Correlation between total minutes usage and number of lines")
 ```
 
+## Relationships with response variable
