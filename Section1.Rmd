@@ -185,6 +185,10 @@ ggplot(data=phones ,aes(phones$PHONE_PLAN)) + geom_histogram(stat="count") + lab
 ggplot(data=phones ,aes(phones$EDUCATION)) + geom_histogram(stat="count")   + labs(x="Education" ,y="Number of persons")
 ```
 ## 3.e
+### AREA_CODE
+```{r}
+ggplot(data=phones ,aes(x=phones$AREA_CODE, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count") + theme_bw()   + labs(x="Area code" ,y="Number of persons", title="Looking for disproportions in Churning rates", fill="Churner")
+```
 ### INCOME
 ```{r}
 ggplot(data=phones ,aes(x=phones$INCOME, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count") + theme_bw()   + labs(x="Income" ,y="Number of persons", title="Looking for disproportions in Churning rates", fill="Churner")
@@ -297,8 +301,10 @@ square_root_transfo_skewness <- (3*(mean(square_root_transfo)-median(square_root
 
 square_root_transfo_skewness
 ```
-### CORRELATION
-### Minutes of usage
+## 7.
+Correlation
+
+Minutes of usage
 ```{r}
 ggplot(data=phones ,aes(x=phones$TOT_MINUTES_USAGE, y=phones$MINUTES_CURR_MONTH + phones$MINUTES_PREV_MONTH + phones$MINUTES_3MONTHS_AGO)) + geom_point() + labs(x="Total minutes usage" ,y="Addition of minutes current month, last month, 3 months ago", title="Correlation between minutes of usage")
 ```
