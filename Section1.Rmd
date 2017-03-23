@@ -301,7 +301,7 @@ square_root_transfo_skewness <- (3*(mean(square_root_transfo)-median(square_root
 
 square_root_transfo_skewness
 ```
-## 7.
+## 7.a.
 Correlation
 
 Minutes of usage
@@ -318,4 +318,20 @@ ggplot(data=phones ,aes(x=phones$NUM_LINES, y=phones$CUST_MOS)) + geom_point() +
 ggplot(data=phones ,aes(x=phones$NUM_LINES, y=phones$TOT_MINUTES_USAGE)) + geom_point() + labs(y="Total minutes usage" ,x="number of lines", title="Correlation between total minutes usage and number of lines")
 ```
 
-## Relationships with response variable
+## 7.b
+Minutes usage metrics correlation
+```{r}
+covariance_minutes <- cov(phones$TOT_MINUTES_USAGE, phones$MINUTES_CURR_MONTH + phones$MINUTES_PREV_MONTH + phones$MINUTES_3MONTHS_AGO)
+covariance_minutes
+
+correlation_minutes <- covariance_minutes / (sd(phones$TOT_MINUTES_USAGE)*sd(phones$MINUTES_CURR_MONTH + phones$MINUTES_PREV_MONTH + phones$MINUTES_3MONTHS_AGO))
+correlation_minutes
+```
+Usage and customer fidelity
+```{r}
+covariance_minutes_fid <- cov(phones$TOT_MINUTES_USAGE, phones$CUST_MOS)
+covariance_minutes_fid
+
+correlation_minutes_fid <- covariance_minutes_fid / (sd(phones$TOT_MINUTES_USAGE)*sd(phones$CUST_MOS))
+correlation_minutes_fid
+```
