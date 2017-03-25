@@ -1,7 +1,15 @@
 ---
-title: "- Data Understanding and Data Exploration"
-output: html_notebook
+title: "Data Understanding and Data Exploration"
+author: 'Daniel-Mateus-Pires'
+output: pdf_document
 ---
+## PDF config
+
+```{r}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+```
+
 # EuroCom
 
 ### Dependencies
@@ -219,7 +227,10 @@ ggplot(data=phones ,aes(x=phones$EDUCATION, group=phones$CHURNER, fill=phones$CH
 ```{r}
 ggplot(data=phones ,aes(x=phones$GENDER, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count", position="dodge")  + labs(x="Gender" ,y="Number of persons", title="Looking for disproportions in Churning rates", fill="Churner")
 ```
-
+### CONVERGENT_BILLING
+```{r}
+ggplot(data=phones ,aes(x=phones$CONVERGENT_BILLING, group=phones$CHURNER, fill=phones$CHURNER)) + geom_histogram(stat="count")  + labs(x="Convergent billing" ,y="Number of persons", title="Looking for disproportions in Churning rates", fill="Churner")
+```
 ## 3.f
 ### CUST_MOS
 ```{r}
@@ -334,4 +345,30 @@ covariance_minutes_fid
 
 correlation_minutes_fid <- covariance_minutes_fid / (sd(phones$TOT_MINUTES_USAGE)*sd(phones$CUST_MOS))
 correlation_minutes_fid
+```
+```{r}
+covariance_lines_fid <- cov(phones$NUM_LINES, phones$CUST_MOS)
+covariance_lines_fid
+
+correlation_lines_fid <- covariance_lines_fid / (sd(phones$NUM_LINES)*sd(phones$CUST_MOS))
+correlation_lines_fid
+```
+```{r}
+covariance_lines_minutes <- cov(phones$NUM_LINES, phones$TOT_MINUTES_USAGE)
+covariance_lines_minutes
+
+correlation_lines_minutes <- covariance_lines_minutes / (sd(phones$NUM_LINES)*sd(phones$TOT_MINUTES_USAGE))
+correlation_lines_minutes
+```
+## Part 2
+Preparating Data for learning
+```{r}
+keep <- c("INCOME", "PHONE_PLAN", "EDUCATION", "AREA_CODE", "CUS_MOS", "CHURNER", "CONVERGENT_BILLING")
+phones_learning <- phones[ , (names(phones) %in% keep)]
+phones_learning$AREA_CODE <- as.factor(phones_learning$AREA_CODE)
+head(phones_learning)
+```
+Writing the learning data to csv
+```{r}
+write.csv(phones_learning ,file="./learning_churners.csv")
 ```
